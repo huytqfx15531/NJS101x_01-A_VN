@@ -20,33 +20,6 @@
   margin-bottom: 0.5rem;
 }
 
-.form-control {
-  margin: 1em 0;
-}
-
-.form-control label,
-.form-control input {
-  display: block;
-  width: 100%;
-}
-
-.form-control input {
-  border: 1px solid #dbc441;
-  font: inherit;
-  border-radius: 2px;
-}
-
-button {
-  font: inherit;
-  border: 1px solid #3e00a1;
-  background: white;
-  border-radius: 3px;
-  color: #3e00a1;
-  cursor: pointer;
-}
-
-button:hover,
-button:active {
-  background-color: #3e00a1;
-  color: #fff;
+.product__description {
+  text-align: center;
 }
