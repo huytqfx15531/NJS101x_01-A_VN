@@ -9,13 +9,14 @@ class Product {
     this.description = description;
     this._id = id;
   }
+
   save() {
     const db = getDb();
     let dbOp;
     if (this._id) {
       dbOp = db
         .collection("products")
-        .updateOne({ _id: new mongodb.ObjectId(id) }, { $set: this });
+        .updateOne({ _id: new mongodb.ObjectId(this._id) }, { $set: this });
     } else {
       dbOp = db.collection("products").insertOne(this);
     }
