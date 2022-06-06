@@ -94,6 +94,9 @@ exports.postOrder = (req, res, next) => {
       return order.save();
     })
     .then((result) => {
+      return req.user.clearCart();
+    })
+    .then(() => {
       res.redirect("/orders");
     })
     .catch((err) => console.log(err));
@@ -102,7 +105,7 @@ exports.postOrder = (req, res, next) => {
 exports.getOrders = (req, res, next) => {
   req.user
     .getOrders()
-    .then((orders) => {
+    .then(orders => {
       res.render("shop/orders", {
         path: "/orders",
         pageTitle: "Your Orders",
