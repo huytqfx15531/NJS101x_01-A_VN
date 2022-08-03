@@ -52,7 +52,13 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => {
-      res.redirect("/500");
+      //Cách 1 để xử lý lỗi
+      // res.redirect("/500");
+
+      //Cách 2 để xử lý lỗi
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -77,7 +83,15 @@ exports.getEditProduct = (req, res, next) => {
         validationErrors: [],
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      //Cách 1 để xử lý lỗi
+      // res.redirect("/500");
+
+      //Cách 2 để xử lý lỗi
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.postEditProduct = (req, res, next) => {
