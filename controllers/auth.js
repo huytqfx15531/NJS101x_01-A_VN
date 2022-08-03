@@ -1,3 +1,5 @@
+const bcrypt = require("bcryptjs"); // cài đặt gói bcryptjs qua npm và import vào để mã hóa mật khẩu trong mongodb compass. Sử dụng dưới dòng 43, 45, 48 của postSignup
+
 const User = require("../models/user");
 
 exports.getLogin = (req, res, next) => {
@@ -9,7 +11,7 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-  User.findById("626a667513c1b912e6192fed")
+  User.findById("629cc7bc972d82932d39ff91")
     .then((user) => {
       req.session.isLoggedIn = true;
       req.session.user = user;
@@ -38,16 +40,22 @@ exports.postSignup = (req, res, next) => {
       if (userDoc) {
         return res.redirect("/signup");
       }
+      return bcrypt.hash(password, 12);
+    })
+    .then((hashedPassword) => {
       const user = new User({
         email: email,
-        password: password,
+        password: hashedPassword,
         cart: { item: [] },
       });
-      return user.save().then((result) => {
-        res.redirect("/login");
-      });
+      return user.save();
     })
-    .catch((err) => console.log(err));
+    .then((result) => {
+      res.redirect("/login");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.postLogout = (req, res, next) => {
