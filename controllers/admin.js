@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const { validationResult } = require("express-validator/check");
 const Product = require("../models/product");
 
@@ -38,7 +37,6 @@ exports.postAddProduct = (req, res, next) => {
     });
   }
   const product = new Product({
-    _id: new mongoose.Types.ObjectId("629cc7bc972d82932d39ff91"),
     title: title,
     price: price,
     description: description,
@@ -136,7 +134,15 @@ exports.postEditProduct = (req, res, next) => {
       console.log("UPDATED PRODUCT!");
       res.redirect("/admin/products");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      //Cách 1 để xử lý lỗi
+      // res.redirect("/500");
+
+      //Cách 2 để xử lý lỗi
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getProducts = (req, res, next) => {
@@ -150,7 +156,15 @@ exports.getProducts = (req, res, next) => {
         isAuthenticated: req.session.isLoggedIn,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      //Cách 1 để xử lý lỗi
+      // res.redirect("/500");
+
+      //Cách 2 để xử lý lỗi
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.postDeleteProduct = (req, res, next) => {
@@ -160,5 +174,13 @@ exports.postDeleteProduct = (req, res, next) => {
       console.log("DESTROYED PRODUCT");
       res.redirect("/admin/products");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      //Cách 1 để xử lý lỗi
+      // res.redirect("/500");
+
+      //Cách 2 để xử lý lỗi
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };

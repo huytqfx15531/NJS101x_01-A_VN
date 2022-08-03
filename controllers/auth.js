@@ -73,7 +73,13 @@ exports.postLogin = (req, res, next) => {
           });
         })
         .catch((err) => {
-          console.log(err), res.redirect("/login");
+          //Cách 1 để xử lý lỗi
+          // res.redirect("/500");
+
+          //Cách 2 để xử lý lỗi
+          const error = new Error(err);
+          error.httpStatusCode = 500;
+          return next(error);
         });
     })
     .catch((err) => console.log(err));
@@ -122,10 +128,18 @@ exports.postSignup = (req, res, next) => {
         password: hashedPassword,
         cart: { item: [] },
       });
-      return user.save();
+      return user.save().then((result) => {
+        res.redirect("/login");
+      });
     })
-    .then((result) => {
-      res.redirect("/login");
+    .catch((err) => {
+      //Cách 1 để xử lý lỗi
+      // res.redirect("/500");
+
+      //Cách 2 để xử lý lỗi
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
