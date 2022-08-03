@@ -10,10 +10,14 @@ router.get("/login", authController.getLogin);
 router.post(
   "/login",
   [
-    body("email").isEmail().withMessage("Please enter a valid email address."),
+    body("email")
+      .isEmail()
+      .withMessage("Please enter a valid email address.")
+      .normalizeEmail(), // phương thức .normalizeEmail() để loại bỏ khoảng trắng (space) và biến chữ hoa thành chữ thường trong email
     body("password", "Password has to be valid.")
       .isLength({ min: 6 })
-      .isAlphanumeric(),
+      .isAlphanumeric()
+      .trim(), // phương thức .trim() để loại bỏ khoảng trắng (space) trong password
   ],
   authController.postLogin
 );
@@ -38,7 +42,8 @@ router.post(
             );
           }
         });
-      }),
+      })
+      .normalizeEmail(),
 
     body(
       // kiếm tra password dùng body được import ở trên
@@ -46,15 +51,18 @@ router.post(
       "Please enter a password with only text and numbers and at least 5 characters." // Thay vì sử dụng method .withMessage() như ở trên ta có thể gộp câu thông báo lỗi đó trong body như này hoặc check
     )
       .isLength({ min: 5 }) // method .isLength() để đặt điều kiện cho password có tối thiểu là 5 ký tự
-      .isAlphanumeric(), // method .isAlphanumeric() để đặt điều kiện cho người dùng chỉ được đặt mật khẩu với chữ và số. không được có ký tự đặt biệt luôn.
+      .isAlphanumeric() // method .isAlphanumeric() để đặt điều kiện cho người dùng chỉ được đặt mật khẩu với chữ và số. không được có ký tự đặt biệt luôn.
+      .trim(),
 
-    body("confirmPassword").custom((value, { req }) => {
-      // body này để kiểm tra input confirmPassword trong views/auth/signup
-      if (value !== req.body.password) {
-        throw new Error("Password have to match!");
-      }
-      return true;
-    }),
+    body("confirmPassword")
+      .custom((value, { req }) => {
+        // body này để kiểm tra input confirmPassword trong views/auth/signup
+        if (value !== req.body.password) {
+          throw new Error("Password have to match!");
+        }
+        return true;
+      })
+      .trim(),
   ],
   authController.postSignup
 );
