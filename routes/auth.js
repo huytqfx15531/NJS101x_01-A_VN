@@ -22,6 +22,7 @@ router.post(
         }
         return true;
       }),
+
     body(
       // kiếm tra password dùng body được import ở trên
       "password",
@@ -29,6 +30,14 @@ router.post(
     )
       .isLength({ min: 5 }) // method .isLength() để đặt điều kiện cho password có tối thiểu là 5 ký tự
       .isAlphanumeric(), // method .isAlphanumeric() để đặt điều kiện cho người dùng chỉ được đặt mật khẩu với chữ và số. không được có ký tự đặt biệt luôn.
+
+    body("confirmPassword").custom((value, { req }) => {
+      // body này để kiểm tra input confirmPassword trong views/auth/signup
+      if (value !== req.body.password) {
+        throw new Error("Password have to match!");
+      }
+      return true;
+    }),
   ],
   authController.postSignup
 );
