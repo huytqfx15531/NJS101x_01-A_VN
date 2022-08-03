@@ -13,11 +13,11 @@ router.post(
     body("email")
       .isEmail()
       .withMessage("Please enter a valid email address.")
-      .normalizeEmail(), // phương thức .normalizeEmail() để loại bỏ khoảng trắng (space) và biến chữ hoa thành chữ thường trong email
+      .normalizeEmail(), // phương thức .normalizeEmail() để loại bỏ khoảng trắng (space) và biến chữ hoa thành chữ thường cho email
     body("password", "Password has to be valid.")
       .isLength({ min: 6 })
       .isAlphanumeric()
-      .trim(), // phương thức .trim() để loại bỏ khoảng trắng (space) trong password
+      .trim(), // phương thức .trim() để loại bỏ khoảng trắng (space) ở đầu và cuối cho password
   ],
   authController.postLogin
 );
