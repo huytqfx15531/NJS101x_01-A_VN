@@ -8,7 +8,7 @@ exports.getAddProduct = (req, res, next) => {
     editing: false,
     hasError: false,
     errorMessage: null,
-    // validationErrors: [],
+    validationErrors: [],
   });
 };
 
@@ -33,7 +33,7 @@ exports.postAddProduct = (req, res, next) => {
         description: description,
       },
       errorMessage: errors.array()[0].msg,
-      // validationErrors: errors.array(),
+      validationErrors: errors.array(),
     });
   }
   const product = new Product({
@@ -72,7 +72,7 @@ exports.getEditProduct = (req, res, next) => {
         hasError: false,
         product: product,
         errorMessage: null,
-        // validationErrors: [],
+        validationErrors: [],
       });
     })
     .catch((err) => console.log(err));
@@ -84,9 +84,32 @@ exports.postEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    console.log(errors.array()[0].msg);
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Edit Product",
+      path: "/admin/edit-product",
+      editing: true,
+      hasError: true,
+      product: {
+        title: updatedTitle,
+        imageUrl: updatedImageUrl,
+        price: updatedPrice,
+        description: updatedDesc,
+        _id: prodId,
+      },
+      errorMessage: errors.array()[0].msg,
+      validationErrors: errors.array(),
+    });
+  }
 
   Product.findById(prodId)
     .then((product) => {
+      if (product.userId.toString() !== req.user._id.toString()) {
+        return res.redirect("/");
+      }
       product.title = updatedTitle;
       product.price = updatedPrice;
       product.description = updatedDesc;

@@ -25,6 +25,7 @@ router.post(
       "description",
       "Please anter a description with at min 5 characters and max 200 characters."
     )
+      .isString()
       .isLength({ min: 5, max: 200 })
       .trim(),
   ],
@@ -50,6 +51,7 @@ router.post(
       "description",
       "Please anter a description with at min 5 characters and max 200 characters."
     )
+      .isString()
       .isLength({ min: 5, max: 200 })
       .trim(),
   ],
