@@ -174,6 +174,11 @@ exports.getInvoice = (req, res, next) => {
     if (err) {
       return next(err);
     }
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      'inline; filename="' + invoiceName + '"' // inline để coi trực tiếp trên web khỏi phải tải về có thể thay bằng attachment thì khi khách click vào sẽ tải tệp đính kèm về
+    );
     res.send(data);
   });
 };
