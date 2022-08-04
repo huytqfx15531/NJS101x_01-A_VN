@@ -166,19 +166,29 @@ exports.getOrders = (req, res, next) => {
 
 exports.getInvoice = (req, res, next) => {
   const orderId = req.params.orderId;
-  const invoiceName = "Invoice-" + orderId + ".pdf";
-  const invoicePath = path.join("data", "invoices", invoiceName);
-  fs.readFile(invoicePath, (err, data) => {
-    console.log("err", err);
-    console.log("data", data);
-    if (err) {
-      return next(err);
-    }
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      'inline; filename="' + invoiceName + '"' // inline để coi trực tiếp trên web khỏi phải tải về có thể thay bằng attachment thì khi khách click vào sẽ tải tệp đính kèm về
-    );
-    res.send(data);
-  });
+  Order.findById(orderId)
+    .then((order) => {
+      if (!order) {
+        return next(new Error("No order found."));
+      }
+      if (order.user.userId.toString() !== req.user._id.toString()) {
+        return next(new Error("Unauthorized"));
+      }
+      const invoiceName = "Invoice-" + orderId + ".pdf";
+      const invoicePath = path.join("data", "invoices", invoiceName);
+      fs.readFile(invoicePath, (err, data) => {
+        console.log("err", err);
+        console.log("data", data);
+        if (err) {
+          return next(err);
+        }
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          'inline; filename="' + invoiceName + '"' // inline để coi trực tiếp trên web khỏi phải tải về có thể thay bằng attachment thì khi khách click vào sẽ tải tệp đính kèm về
+        );
+        res.send(data);
+      });
+    })
+    .catch((err) => next(err));
 };
