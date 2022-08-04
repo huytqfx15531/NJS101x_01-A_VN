@@ -19,7 +19,7 @@ router.post(
       .isString()
       .isLength({ min: 3, max: 200 })
       .trim(),
-    body("imageUrl", "Please enter a valid imageUrl.").isURL(),
+    // body("image", "Please enter a valid imageUrl."),
     body("price", "Please enter a valid price.").isFloat(),
     body(
       "description",
@@ -45,7 +45,7 @@ router.post(
       .isLength({ min: 3, max: 200 })
       .isString()
       .trim(),
-    body("imageUrl", "Please enter a valid imageUrl.").isURL(),
+    // body("image", "Please enter a valid imageUrl."),
     body("price", "Please enter a valid price.").isFloat(),
     body(
       "description",

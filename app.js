@@ -1,7 +1,8 @@
 const path = require("path");
+const bodyParser = require("body-parser");
+const multer = require("multer"); // dùng để lấy giá trị của file ảnh trong input
 
 const express = require("express");
-const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
@@ -31,6 +32,7 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({ dest: "images" }).single("image")); // dest: "images" là để tạo ra 1 folder mới tên images còn .single("image") là đang trỏ đến <input type="file" /> của views/admin/edit-product.ejs
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
