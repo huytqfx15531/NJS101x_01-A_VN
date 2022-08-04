@@ -77,6 +77,7 @@ exports.postLogin = (req, res, next) => {
       bcrypt
         .compare(password, user.password)
         .then((doMatch) => {
+          console.log("domatch", doMatch);
           if (doMatch) {
             req.session.isLoggedIn = true;
             req.session.user = user;
@@ -97,7 +98,7 @@ exports.postLogin = (req, res, next) => {
           });
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
           res.redirect("/login");
         });
     })

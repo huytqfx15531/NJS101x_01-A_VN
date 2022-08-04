@@ -87,7 +87,7 @@ exports.postAddProduct = (req, res, next) => {
       //   errorMessage: 'Database operation failed, please try again.',
       //   validationErrors: []
       // });
-      // res.redirect('/500');
+      // res.redirect("/500");
       const error = new Error(err);
       error.httpStatusCode = 500;
       return next(error);
