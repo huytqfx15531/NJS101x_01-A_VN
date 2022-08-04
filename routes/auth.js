@@ -1,11 +1,14 @@
 const express = require("express");
-const router = express.Router();
 const { check, body } = require("express-validator/check");
 
-const User = require("../models/user");
 const authController = require("../controllers/auth");
+const User = require("../models/user");
+
+const router = express.Router();
 
 router.get("/login", authController.getLogin);
+
+router.get("/signup", authController.getSignup);
 
 router.post(
   "/login",
@@ -13,56 +16,50 @@ router.post(
     body("email")
       .isEmail()
       .withMessage("Please enter a valid email address.")
-      .normalizeEmail(), // phương thức .normalizeEmail() để loại bỏ khoảng trắng (space) và biến chữ hoa thành chữ thường cho email
+      .normalizeEmail(),
     body("password", "Password has to be valid.")
-      .isLength({ min: 6 })
+      .isLength({ min: 5 })
       .isAlphanumeric()
-      .trim(), // phương thức .trim() để loại bỏ khoảng trắng (space) ở đầu và cuối cho password
+      .trim(),
   ],
   authController.postLogin
 );
 
-router.get("/signup", authController.getSignup);
-
 router.post(
   "/signup",
   [
-    check("email") // kiểm tra email dùng check đã import ở trên
-      .isEmail() // method .isEmail() để kiểm tra trường này bắt buộc là email
-      .withMessage("Please enter a valid email.") // .withMessage() là method của express-validator để tạo ra câu thông báo lỗi theo ý người lập trình
+    check("email")
+      .isEmail()
+      .withMessage("Please enter a valid email.")
       .custom((value, { req }) => {
-        // if (value === "test@test.com") {
-        //   throw new Error("This email address if forbidden.");
+        // if (value === 'test@test.com') {
+        //   throw new Error('This email address if forbidden.');
         // }
         // return true;
         return User.findOne({ email: value }).then((userDoc) => {
           if (userDoc) {
             return Promise.reject(
-              "E-mail exists already, please pick a different one."
+              "E-Mail exists already, please pick a different one."
             );
           }
         });
       })
       .normalizeEmail(),
-
     body(
-      // kiếm tra password dùng body được import ở trên
       "password",
-      "Please enter a password with only text and numbers and at least 5 characters." // Thay vì sử dụng method .withMessage() như ở trên ta có thể gộp câu thông báo lỗi đó trong body như này hoặc check
+      "Please enter a password with only numbers and text and at least 5 characters."
     )
-      .isLength({ min: 5 }) // method .isLength() để đặt điều kiện cho password có tối thiểu là 5 ký tự
-      .isAlphanumeric() // method .isAlphanumeric() để đặt điều kiện cho người dùng chỉ được đặt mật khẩu với chữ và số. không được có ký tự đặt biệt luôn.
+      .isLength({ min: 5 })
+      .isAlphanumeric()
       .trim(),
-
     body("confirmPassword")
+      .trim()
       .custom((value, { req }) => {
-        // body này để kiểm tra input confirmPassword trong views/auth/signup
         if (value !== req.body.password) {
-          throw new Error("Password have to match!");
+          throw new Error("Passwords have to match!");
         }
         return true;
-      })
-      .trim(),
+      }),
   ],
   authController.postSignup
 );

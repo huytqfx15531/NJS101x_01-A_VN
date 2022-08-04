@@ -11,7 +11,11 @@ exports.getProducts = (req, res, next) => {
         path: "/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getProduct = (req, res, next) => {
@@ -24,7 +28,11 @@ exports.getProduct = (req, res, next) => {
         path: "/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getIndex = (req, res, next) => {
@@ -37,10 +45,6 @@ exports.getIndex = (req, res, next) => {
       });
     })
     .catch((err) => {
-      //Cách 1 để xử lý lỗi
-      // res.redirect("/500");
-
-      //Cách 2 để xử lý lỗi
       const error = new Error(err);
       error.httpStatusCode = 500;
       return next(error);
@@ -50,8 +54,8 @@ exports.getIndex = (req, res, next) => {
 exports.getCart = (req, res, next) => {
   req.user
     .populate("cart.items.productId")
+    .execPopulate()
     .then((user) => {
-      console.log("user", user.cart.items);
       const products = user.cart.items;
       res.render("shop/cart", {
         path: "/cart",
@@ -60,10 +64,6 @@ exports.getCart = (req, res, next) => {
       });
     })
     .catch((err) => {
-      //Cách 1 để xử lý lỗi
-      // res.redirect("/500");
-
-      //Cách 2 để xử lý lỗi
       const error = new Error(err);
       error.httpStatusCode = 500;
       return next(error);
@@ -81,10 +81,6 @@ exports.postCart = (req, res, next) => {
       res.redirect("/cart");
     })
     .catch((err) => {
-      //Cách 1 để xử lý lỗi
-      // res.redirect("/500");
-
-      //Cách 2 để xử lý lỗi
       const error = new Error(err);
       error.httpStatusCode = 500;
       return next(error);
@@ -99,10 +95,6 @@ exports.postCartDeleteProduct = (req, res, next) => {
       res.redirect("/cart");
     })
     .catch((err) => {
-      //Cách 1 để xử lý lỗi
-      // res.redirect("/500");
-
-      //Cách 2 để xử lý lỗi
       const error = new Error(err);
       error.httpStatusCode = 500;
       return next(error);
@@ -112,16 +104,17 @@ exports.postCartDeleteProduct = (req, res, next) => {
 exports.postOrder = (req, res, next) => {
   req.user
     .populate("cart.items.productId")
+    .execPopulate()
     .then((user) => {
       const products = user.cart.items.map((i) => {
-        return { product: { ...i.productId._doc }, quantity: i.quantity };
+        return { quantity: i.quantity, product: { ...i.productId._doc } };
       });
       const order = new Order({
-        products: products,
         user: {
           email: req.user.email,
           userId: req.user,
         },
+        products: products,
       });
       return order.save();
     })
@@ -132,10 +125,6 @@ exports.postOrder = (req, res, next) => {
       res.redirect("/orders");
     })
     .catch((err) => {
-      //Cách 1 để xử lý lỗi
-      // res.redirect("/500");
-
-      //Cách 2 để xử lý lỗi
       const error = new Error(err);
       error.httpStatusCode = 500;
       return next(error);
@@ -152,10 +141,6 @@ exports.getOrders = (req, res, next) => {
       });
     })
     .catch((err) => {
-      //Cách 1 để xử lý lỗi
-      // res.redirect("/500");
-
-      //Cách 2 để xử lý lỗi
       const error = new Error(err);
       error.httpStatusCode = 500;
       return next(error);

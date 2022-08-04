@@ -1,33 +1,26 @@
+const path = require("path");
+
 const express = require("express");
-const router = express.Router();
 const { body } = require("express-validator/check");
 
 const adminController = require("../controllers/admin");
 const isAuth = require("../middleware/is-auth");
 
+const router = express.Router();
+
+// /admin/add-product => GET
 router.get("/add-product", isAuth, adminController.getAddProduct);
 
+// /admin/products => GET
 router.get("/products", isAuth, adminController.getProducts);
 
+// /admin/add-product => POST
 router.post(
   "/add-product",
   [
-    body(
-      "title",
-      "Please enter a Title with at min 3 characters and max 200 characters."
-    )
-      .isString()
-      .isLength({ min: 3, max: 200 })
-      .trim(),
-    // body("image", "Please enter a valid imageUrl."),
-    body("price", "Please enter a valid price.").isFloat(),
-    body(
-      "description",
-      "Please anter a description with at min 5 characters and max 200 characters."
-    )
-      .isString()
-      .isLength({ min: 5, max: 200 })
-      .trim(),
+    body("title").isString().isLength({ min: 3 }).trim(),
+    body("price").isFloat(),
+    body("description").isLength({ min: 5, max: 400 }).trim(),
   ],
   isAuth,
   adminController.postAddProduct
@@ -38,22 +31,10 @@ router.get("/edit-product/:productId", isAuth, adminController.getEditProduct);
 router.post(
   "/edit-product",
   [
-    body(
-      "title",
-      "Please enter a Title with at min 3 characters and max 200 characters."
-    )
-      .isLength({ min: 3, max: 200 })
-      .isString()
-      .trim(),
-    // body("image", "Please enter a valid imageUrl."),
-    body("price", "Please enter a valid price.").isFloat(),
-    body(
-      "description",
-      "Please anter a description with at min 5 characters and max 200 characters."
-    )
-      .isString()
-      .isLength({ min: 5, max: 200 })
-      .trim(),
+    body("title").isString().isLength({ min: 3 }).trim(),
+    body("imageUrl").isURL(),
+    body("price").isFloat(),
+    body("description").isLength({ min: 5, max: 400 }).trim(),
   ],
   isAuth,
   adminController.postEditProduct

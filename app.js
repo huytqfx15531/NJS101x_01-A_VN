@@ -1,32 +1,26 @@
 const path = require("path");
-const bodyParser = require("body-parser");
-const multer = require("multer"); // dùng để lấy giá trị của file ảnh trong input
 
 const express = require("express");
+const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const multer = require("multer");
 
-const User = require("./models/user");
-
-const adminRoutes = require("./routes/admin");
-const shopRoutes = require("./routes/shop");
-const authRouters = require("./routes/auth");
 const errorController = require("./controllers/error");
-
-const app = express();
+const User = require("./models/user");
 
 const MONGODB_URI =
   "mongodb+srv://Huyfx15531:040199@cluster0.xadso29.mongodb.net/?retryWrites=true&w=majority";
 
+const app = express();
 const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: "sessions",
 });
-
-const csrfProtection = csrf({});
+const csrfProtection = csrf();
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -52,8 +46,11 @@ const fileFilter = (req, file, cb) => {
 app.set("view engine", "ejs");
 app.set("views", "views");
 
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
+
 app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(multer({ dest: "images" }).single("image")); // storage: fileStorage là để tạo ra 1 folder mới tên images còn .single("image") là đang trỏ đến <input type="file" /> của views/admin/edit-product.ejs
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
 );
@@ -66,7 +63,6 @@ app.use(
     store: store,
   })
 );
-
 app.use(csrfProtection);
 app.use(flash());
 
@@ -77,6 +73,7 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
+  // throw new Error('Sync Dummy');
   if (!req.session.user) {
     return next();
   }
@@ -95,15 +92,15 @@ app.use((req, res, next) => {
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
-app.use(authRouters);
+app.use(authRoutes);
 
 app.get("/500", errorController.get500);
+
 app.use(errorController.get404);
 
 app.use((error, req, res, next) => {
-  const test = req.session.isLoggedIn;
-  console.log("test", test);
-  // res.redirect("/500");
+  // res.status(error.httpStatusCode).render(...);
+  // res.redirect('/500');
   res.status(500).render("500", {
     pageTitle: "Error!",
     path: "/500",
@@ -116,4 +113,6 @@ mongoose
   .then((result) => {
     app.listen(3000);
   })
-  .catch((err) => console.log(err));
+  .catch((err) => {
+    console.log(err);
+  });

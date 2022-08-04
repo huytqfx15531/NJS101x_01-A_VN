@@ -8,7 +8,7 @@
 
     <main>
         <% if (errorMessage) { %>
-            <div class="user-massage user-massage--error"><%= errorMessage %></div>
+            <div class="user-message user-message--error"><%= errorMessage %></div>
         <% } %>
         <form class="product-form" action="/admin/<% if (editing) { %>edit-product<% } else { %>add-product<% } %>" method="POST" enctype="multipart/form-data">
             <div class="form-control">
@@ -18,8 +18,7 @@
                     type="text" 
                     name="title" 
                     id="title" 
-                    value="<% if (editing || hasError) { %><%= product.title %><% } %>"
-                />
+                    value="<% if (editing || hasError) { %><%= product.title %><% } %>">
             </div>
             <!-- <div class="form-control">
                 <label for="imageUrl">Image URL</label>
@@ -28,16 +27,14 @@
                     type="text" 
                     name="imageUrl" 
                     id="imageUrl" 
-                    value="<% if (editing || hasError) { %><%= product.imageUrl %><% } %>"
-                />
+                    value="<% if (editing || hasError) { %><%= product.imageUrl %><% } %>">
             </div> -->
             <div class="form-control">
                 <label for="image">Image</label>
                 <input 
                     type="file" 
                     name="image" 
-                    id="image" 
-                />
+                    id="image" >
             </div>
             <div class="form-control">
                 <label for="price">Price</label>
@@ -47,8 +44,7 @@
                     name="price" 
                     id="price" 
                     step="0.01" 
-                    value="<% if (editing || hasError) { %><%= product.price %><% } %>"
-                />
+                    value="<% if (editing || hasError) { %><%= product.price %><% } %>">
             </div>
             <div class="form-control">
                 <label for="description">Description</label>
@@ -56,14 +52,14 @@
                     class="<%= validationErrors.find(e => e.param === 'description') ? 'invalid' : '' %>"
                     name="description" 
                     id="description" 
-                    rows="5"
-                ><% if (editing || hasError) { %><%= product.description %><% } %></textarea>
+                    rows="5"><% if (editing || hasError) { %><%= product.description %><% } %></textarea>
             </div>
             <% if (editing) { %>
-                <input type="hidden" name="productId" value="<%= product._id %>" />
+                <input type="hidden" value="<%= product._id %>" name="productId">
             <% } %>
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-            <button class="btn" type="submit"><% if (editing) { %> Update Product <% } else { %> Add Product <% } %></button>
+
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button class="btn" type="submit"><% if (editing) { %>Update Product<% } else { %>Add Product<% } %></button>
         </form>
     </main>
 <%- include('../includes/end.ejs') %>
