@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const PDFDocument = require("pdfkit");
 const Product = require("../models/product");
 const Order = require("../models/order");
 
@@ -176,6 +177,19 @@ exports.getInvoice = (req, res, next) => {
       }
       const invoiceName = "Invoice-" + orderId + ".pdf";
       const invoicePath = path.join("data", "invoices", invoiceName);
+
+      const pdfDoc = new PDFDocument();
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        'inline; filename="' + invoiceName + '"' // inline để coi trực tiếp trên web khỏi phải tải về có thể thay bằng attachment thì khi khách click vào sẽ tải tệp đính kèm về
+      );
+      pdfDoc.pipe(fs.createWriteStream(invoicePath));
+      pdfDoc.pipe(res);
+
+      pdfDoc.text("Hello world!");
+
+      pdfDoc.end();
       // fs.readFile(invoicePath, (err, data) => {
       //   console.log("err", err);
       //   console.log("data", data);
@@ -189,13 +203,8 @@ exports.getInvoice = (req, res, next) => {
       //   );
       //   res.send(data);
       // });
-      const file = fs.createReadStream(invoicePath);
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        'inline; filename="' + invoiceName + '"' // inline để coi trực tiếp trên web khỏi phải tải về có thể thay bằng attachment thì khi khách click vào sẽ tải tệp đính kèm về
-      );
-      file.pipe(res);
+      // const file = fs.createReadStream(invoicePath);
+      // file.pipe(res);
     })
     .catch((err) => next(err));
 };
