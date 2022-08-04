@@ -17,10 +17,11 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.file; // sử dụng req.file vì <input type="file" không đọc được req.body như mấy <input type khác />
   const price = req.body.price;
   const description = req.body.description;
+  console.log(imageUrl);
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    console.log(errors.array()[0].msg);
+    // console.log(errors.array()[0].msg);
     return res.status(422).render("admin/edit-product", {
       pageTitle: "Add Product",
       path: "/admin/add-product",

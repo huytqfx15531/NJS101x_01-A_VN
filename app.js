@@ -28,11 +28,35 @@ const store = new MongoDBStore({
 
 const csrfProtection = csrf({});
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString() + "-" + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
 app.set("view engine", "ejs");
 app.set("views", "views");
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({ dest: "images" }).single("image")); // dest: "images" là để tạo ra 1 folder mới tên images còn .single("image") là đang trỏ đến <input type="file" /> của views/admin/edit-product.ejs
+// app.use(multer({ dest: "images" }).single("image")); // storage: fileStorage là để tạo ra 1 folder mới tên images còn .single("image") là đang trỏ đến <input type="file" /> của views/admin/edit-product.ejs
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
@@ -77,6 +101,8 @@ app.get("/500", errorController.get500);
 app.use(errorController.get404);
 
 app.use((error, req, res, next) => {
+  const test = req.session.isLoggedIn;
+  console.log("test", test);
   // res.redirect("/500");
   res.status(500).render("500", {
     pageTitle: "Error!",
